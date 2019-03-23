@@ -1,13 +1,11 @@
 import sqlite3
 from sqlite3 import Error
-import os
-import datetime
+import os, sys
 
 """ check if the db file exist otherwise init with a new one """
 
-DB_FILE = 'tmDB.db'
+DB_FILE = './tmDB.db'
 INIT_TABLE = 'CREATE TABLE IF NOT EXISTS TM_DATA (timeslot TEXT primary key, temperature REAL, humidity REAL);'
-
 
 def initialize():
     """ Create the database file and initialize the table if not exist """
