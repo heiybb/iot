@@ -1,9 +1,8 @@
-import os
+import datetime
 import json
 import SQLiteLib
-import time
-
-from sense_hat import SenseHat
+import virtual_sense_hat
+from virtual_sense_hat import VirtualSenseHat
 
 
 class DataJson:
@@ -12,20 +11,18 @@ class DataJson:
         self.temperature = temperature
         self.humidity = humidity
 
-    def to_string(self):
-        print("The temperature and humidity is: %d %d ", self.temperature, self.humidity)
-
 
 def get_temp_humidity():
-    sense = SenseHat()
+    sense = VirtualSenseHat.getSenseHat()
     sense.clear()
-    timeslot = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    temp = format(sense.get_temperature(), '.2f')
-    humidity = format(sense.get_humidity(), '.2f')
+    timeslot = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
-    newDataJson = DataJson(temp, humidity)
+    temperature = sense.get_temperature()
+    # sense.show_message('Temperature: {0:0.2f} ℃'.format(temperature))
 
-    SQLiteLib.insert_data(timeslot, temp, humidity)
+    humidity = sense.get_humidity()
+    # sense.show_message('Humidity: {0:0.2f} %'.format(humidity))
+    SQLiteLib.insert_data(timeslot, temperature, humidity)
 
 
 def compare():
@@ -33,21 +30,7 @@ def compare():
         conf = json.load(conf)
 
 
-def get_bound_conf():
-    try:
-        with open('config.json', 'r', encoding='utf-8') as conf:
-            conf_data = json.load(conf)
-            minT = conf_data['min_temperature']
-            maxT = conf_data['max_temperature']
-            maxH = conf_data['min_humidity']
-            maxH = conf_data['max_humidity']
-    except:
-        print('Error with reading config file')
-    else:
-        return
-
-
 if __name__ == '__main__':
-    SQLiteLib.init_db_file()
+    SQLiteLib.initialize()
     get_temp_humidity()
-    SQLiteLib.query()
+    SQLiteLib.query_all()
