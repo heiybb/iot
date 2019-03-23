@@ -7,7 +7,6 @@ import datetime
 
 DB_FILE = 'tmDB.db'
 INIT_TABLE = 'CREATE TABLE IF NOT EXISTS TM_DATA (timeslot TEXT primary key, temperature REAL, humidity REAL);'
-INIT_SCK_TABLE = 'CREATE TABLE IF NOT EXISTS PUSH_CK (timeslot TEXT primary key, sended integer);'
 
 
 def initialize():
@@ -17,11 +16,6 @@ def initialize():
         try:
             conn = sqlite3.connect(DB_FILE)
             conn.cursor().execute(INIT_TABLE)
-            conn.commit()
-            conn.cursor().execute(INIT_SCK_TABLE)
-            conn.commit()
-            init_time = datetime.datetime.utcnow().strftime('%Y-%m-%d')
-            conn.cursor().execute('INSERT INTO PUSH_CK (timeslot, sended) VALUES (?,?)', (init_time, 0))
             conn.commit()
         except Error as e:
             print(e)
@@ -45,7 +39,7 @@ def insert_data(time, temp, humi):
         conn.close()
 
 
-def query_all():
+def query_all_th_data():
     global conn
     try:
         conn = sqlite3.connect(DB_FILE)
@@ -60,21 +54,3 @@ def query_all():
         print(e)
     finally:
         conn.close()
-
-
-def query_push():
-    global conn
-    push_ck = 0
-    try:
-        current_utc_day = datetime.datetime.utcnow().strftime('%Y-%m-%d')
-        conn = sqlite3.connect(DB_FILE)
-        exe = conn.cursor()
-        c = exe.execute('select sended from PUSH_CK where timeslot==current_utc_day')
-        for row in c:
-            push_ck = row[0]
-    except Error as e:
-        print(e)
-    finally:
-        conn.close()
-
-    return push_ck
