@@ -1,13 +1,10 @@
+import logging
+import os
 import sqlite3
 from sqlite3 import Error
-import os
-
-from datetime import datetime, timedelta
-
-""" check if the db file exist otherwise init with a new one """
 
 DB_FILE = './tmDB.db'
-INIT_TABLE = """CREATE TABLE IF NOT EXISTS TM_DATA (timeslot TEXT primary key, temperature REAL, humidity REAL)"""
+INIT_TABLE = """CREATE TABLE IF NOT EXISTS TM_DATA (timestamp TEXT primary key, temperature REAL, humidity REAL)"""
 
 
 def initialize():
@@ -26,13 +23,18 @@ def initialize():
         pass
 
 
-def insert_data(timeslot, temperature, humidity):
+# Insert data to the project database file
+def insert_data(timestamp, temperature, humidity):
     connection = sqlite3.connect(DB_FILE)
-    with connection:
-        connection.execute(
-            """INSERT INTO TM_DATA (timeslot, temperature, humidity) 
-            VALUES (?, ?, ?)""", (timeslot, temperature, humidity))
-    connection.close()
+    try:
+        with connection:
+            connection.execute(
+                """INSERT INTO TM_DATA (timestamp, temperature, humidity) 
+                VALUES (?, ?, ?)""", (timestamp, temperature, humidity))
+    except sqlite3.Error as error:
+        logging.error("Database Error: %s", error)
+    finally:
+        connection.close()
 
 
 def query_all_th_data():
@@ -52,20 +54,23 @@ def query_all_th_data():
         conn.close()
 
 
-def get_csv():
+# Query min max temperature and humidity and order by data
+def get_csv_data():
+    data = []
     global conn
     try:
         conn = sqlite3.connect(DB_FILE)
         exe = conn.cursor()
         c = exe.execute(
-            """SELECT strftime('%Y-%m-%d',timeslot),MIN(temperature),MAX(temperature),MIN(humidity),MAX(humidity)
+            """SELECT strftime('%Y-%m-%d',timestamp),MIN(temperature),MAX(temperature),MIN(humidity),MAX(humidity)
             FROM TM_DATA
-            GROUP BY DATE(timeslot)
-            ORDER BY DATE(timeslot)""")
+            GROUP BY DATE(timestamp)
+            ORDER BY DATE(timestamp)""")
 
         for row in c:
-            print(row)
+            data.append(row)
     except Error as e:
         print(e)
     finally:
         conn.close()
+        return data
