@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import re
+from decimal import Decimal
 
 from sense_hat import SenseHat
 
@@ -15,22 +16,12 @@ def get_cpu_temp():
     return float(re.search('\\d+\\.\\d+', res).group(0))
 
 
-def get_smooth(temperature):
-    if not hasattr(get_smooth, "t"):
-        get_smooth.t = [temperature, temperature, temperature]
-    get_smooth.t[2] = get_smooth.t[1]
-    get_smooth.t[1] = get_smooth.t[0]
-    get_smooth.t[0] = temperature
-    smoothed = (get_smooth.t[0] + get_smooth.t[1] + get_smooth.t[2]) / 3
-    return smoothed
-
-
 class MonitorData:
     def __init__(self):
         sense = SenseHat()
         self.time_stamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-        self.temperature = float(format(get_smooth(self.get_act_temp()), '.2f'))
-        self.humidity = float(format(sense.get_humidity(), '.2f'))
+        self.temperature = Decimal(self.get_act_temp()).quantize(Decimal('.00'))
+        self.humidity = Decimal(sense.get_humidity()).quantize(Decimal('.00'))
         try:
             sqlite_lib.insert_data(self.time_stamp, self.temperature, self.humidity)
         except IOError as io_error:
@@ -42,7 +33,7 @@ class MonitorData:
                'Humidity: {0:0.2f} %'.format(self.humidity)
 
     def try_push(self):
-        notify_msm = jsonlib.generate_msg(self.temperature, self.humidity)
+        notify_msm = jsonlib.get_notify_msg(self.temperature, self.humidity)
 
         if notify_msm is not '':
             today_utc = datetime.datetime.utcnow().strftime('%Y-%m-%d')
@@ -56,7 +47,8 @@ class MonitorData:
         t_cpu = get_cpu_temp()
         temp_average = (temp_f_hum + temp_f_pre) / 2
         # calculates the real temperature compensating CPU heating
-        temperature_corr = temp_average - ((t_cpu - temp_average) / 1.5)
+        # minus 10 to make it more close to the real temperature according to the records before
+        temperature_corr = temp_average - ((t_cpu - temp_average) / 1.5) - 10
         return temperature_corr
 
     # use moving average to smooth readings
