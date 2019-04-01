@@ -18,29 +18,39 @@ if not os.path.isfile(PUSH_CHECK_FILE):
 
 
 class PushThread(threading.Thread):
+    def __init__(self, pb_title, pb_content):
+        threading.Thread.__init__(self)
+        self.pb_title = pb_title
+        self.pb_content = pb_content
+        self.service = Pushbullet(PUSHBULLET_API_KEY)
+
+    def push(self):
+        try:
+            self.service.push_note(self.pb_title, self.pb_content)
+        except PushbulletError as push_error:
+            logging.error('Error with pushing to Pushbullet: %s', push_error)
+
+    def run(self):
+        self.push()
+
+
+class PushThreadWithCK(PushThread):
     """
     This class extends Thread used for push notification asynchronously
     """
 
-    def __init__(self, utc_date, str_content):
+    def __init__(self, utc_time, str_content):
         threading.Thread.__init__(self)
-        self.utc_date = utc_date
-        self.str_content = str_content
-        self.service = Pushbullet(PUSHBULLET_API_KEY)
+        self.utc_time = utc_time
+        self.pb_title = 'Raspberry Notify'
+        self.pb_content = str_content
 
     def run(self):
-        is_send_today = self.ck_is_sent(self.utc_date)
+        is_send_today = self.ck_is_sent(self.utc_time)
 
         if not is_send_today:
-            self.push(self)
-            self.mk_is_sent(self.utc_date)
-
-    @staticmethod
-    def push(self):
-        try:
-            self.service.push_note("Raspberry Notify", self.str_content)
-        except PushbulletError as push_error:
-            logging.error('Error with pushing to Pushbullet: %s', push_error)
+            self.push()
+            self.mk_is_sent(self.utc_time)
 
     @staticmethod
     def ck_is_sent(date_time):
