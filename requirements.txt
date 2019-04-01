@@ -1,3 +1,5 @@
+matplotlib
+pushbullet.py
 astroid==2.2.5
 colorama==0.4.1
 isort==4.3.15
