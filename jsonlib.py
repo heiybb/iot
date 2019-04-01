@@ -39,7 +39,7 @@ def get_max_humidity():
     return MAX_HUM
 
 
-def generate_msg(temperature, humidity):
+def get_notify_msg(temperature, humidity):
     msg = ''
     if temperature < MIN_TEMP:
         msg += "Temperature: {temp:0.2f}℃\n {diff:0.2f}℃ below minimum {min_temp}℃\n" \
@@ -56,4 +56,21 @@ def generate_msg(temperature, humidity):
     if humidity > MAX_HUM:
         msg += "Humidity: {hum:0.2f}%\n {diff:0.2f}% above maximum {max_hum}%\n" \
             .format(hum=humidity, diff=humidity - MAX_HUM, max_hum=MAX_HUM)
+    return msg
+
+
+def get_report_msg(min_temp, max_temp, min_hum, max_hum):
+    """
+    Compare the data read queried from the database file with the json bounds
+    and return appropriate message
+    """
+    msg = ''
+    if min_temp < MIN_TEMP:
+        msg += "{diff:0.2f}℃ below minimum temperature; ".format(diff=MIN_TEMP - min_temp)
+    if max_temp > MAX_TEMP:
+        msg += "{diff:0.2f}℃ above maximum temperature; ".format(diff=max_temp - MAX_TEMP)
+    if min_hum < MIN_HUM:
+        msg += "{diff:0.2f}% below minimum temperature; ".format(diff=MIN_HUM - min_hum)
+    if max_hum > MAX_HUM:
+        msg += "{diff:0.2f}% above maximum temperature; ".format(diff=max_hum - MAX_HUM)
     return msg

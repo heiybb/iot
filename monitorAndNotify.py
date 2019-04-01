@@ -20,8 +20,8 @@ class MonitorData:
     def __init__(self):
         sense = SenseHat()
         self.time_stamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-        self.temperature = Decimal(self.get_act_temp()).quantize(Decimal('.00'))
-        self.humidity = Decimal(sense.get_humidity()).quantize(Decimal('.00'))
+        self.temperature = float(Decimal(self.get_act_temp()).quantize(Decimal('.00')))
+        self.humidity = float(Decimal(sense.get_humidity()).quantize(Decimal('.00')))
         try:
             sqlite_lib.insert_data(self.time_stamp, self.temperature, self.humidity)
         except IOError as io_error:
@@ -58,4 +58,4 @@ if __name__ == '__main__':
     sqlite_lib.initialize()
     MON = MonitorData()
     MON.try_push()
-    # SQLiteLib.query_all_th_data()
+    # sqlite_lib.query_all_th_data()

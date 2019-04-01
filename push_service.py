@@ -26,19 +26,33 @@ class PushThread(threading.Thread):
         threading.Thread.__init__(self)
         self.utc_date = utc_date
         self.str_content = str_content
+        self.service = Pushbullet(PUSHBULLET_API_KEY)
 
     def run(self):
-        is_send_today = False
-        with open(PUSH_CHECK_FILE, 'r', encoding='utf-8') as ck_file:
-            if self.utc_date in ck_file.read():
-                is_send_today = True
+        is_send_today = self.ck_is_sent(self.utc_date)
+
         if not is_send_today:
-            try:
-                pushbullet_service = Pushbullet(PUSHBULLET_API_KEY)
-                pushbullet_service.push_note("Raspberry Notify", self.str_content)
-                with open(PUSH_CHECK_FILE, 'w', encoding='utf-8') as ck_file:
-                    ck_file.write(self.utc_date)
-            except PushbulletError as push_error:
-                logging.error('Error with pushing to Pushbullet: %s', push_error)
-            except IOError as error:
-                logging.error('Error with writing status to check file: %s', error)
+            self.push(self)
+            self.mk_is_sent(self.utc_date)
+
+    @staticmethod
+    def push(self):
+        try:
+            self.service.push_note("Raspberry Notify", self.str_content)
+        except PushbulletError as push_error:
+            logging.error('Error with pushing to Pushbullet: %s', push_error)
+
+    @staticmethod
+    def ck_is_sent(date_time):
+        with open(PUSH_CHECK_FILE, 'r', encoding='utf-8') as ck_file:
+            if date_time in ck_file.read():
+                return True
+        return False
+
+    @staticmethod
+    def mk_is_sent(date_time):
+        try:
+            with open(PUSH_CHECK_FILE, 'w', encoding='utf-8') as ck_file:
+                ck_file.write(date_time)
+        except IOError as error:
+            logging.error('Error with writing status to check file: %s', error)
