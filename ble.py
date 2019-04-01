@@ -1,5 +1,8 @@
 import bluetooth
 
+from monitorAndNotify import MonitorData
+from push_service import PushThread
+
 while True:
     print("Scanning...")
     nearbyDevices = bluetooth.discover_devices()
@@ -8,4 +11,6 @@ while True:
         if '40:4E:36:A9:DF:4D' in macAddress:
             print("Muggle's Pixel2 Found")
             # push to pushbullet
-            # TODO finish pushbullet 
+            # TODO finish pushbullet
+            MON = MonitorData()
+            PushThread('BLE Notify', MON.to_string())
