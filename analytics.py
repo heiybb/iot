@@ -1,30 +1,31 @@
 from matplotlib import pyplot as plt
-
 import sqlite_lib
 
-dates, temp, hum = [], [], []
+timestamp, temp, hum, xTicks = [], [], [], []
 
 data = sqlite_lib.get_analytics_data()
-print(data)
+
+# print(data)
 
 for row in data:
-    dates.append(row[0])
+    timestamp.append(row[0].split(" ")[1][:5])
     temp.append(row[1])
     hum.append(row[2])
 
-fig = plt.figure(dpi=320, figsize=(8, 5))
-ax = fig.add_subplot(111)
-ax.plot(dates, temp, '-', label='Temperature')
-ax2 = ax.twinx()
-ax2.plot(dates, hum, '-r', label='Humidity')
+for x in range(0, 25, 2):
+    xTicks.append("{:02}:00".format(x))
 
-fig.legend(loc=1, bbox_to_anchor=(1, 1), bbox_transform=ax.transAxes)
+fig = plt.figure(dpi=320, figsize=(10, 5))
+ax1 = fig.add_subplot(1, 1, 1)
+ax2 = ax1.twinx()
 
-# ax.set_xlabel("Date")
-ax.set_ylabel("Temperature (F)")
-ax2.set_ylabel("Humidity (%)")
+ax1.plot(timestamp, temp, 'r-')
+ax2.plot(timestamp, hum, 'b-')
 
-# fig.autofmt_xdate()
-plt.legend()
+ax1.set_xticks(xTicks)
+ax1.set_ylabel('Temperature(℃)', color='r')
+ax2.set_ylabel('Humidity(%)', color='b')
+
+fig.autofmt_xdate()
+fig.savefig('matplot.png', dpi=fig.dpi)
 plt.show()
-plt.savefig('0.png')
