@@ -1,3 +1,4 @@
+pytz
 matplotlib
 pushbullet.py
 astroid==2.2.5
