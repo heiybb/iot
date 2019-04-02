@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from decimal import Decimal
+from pytz import timezone
 
 from sense_hat import SenseHat
 
@@ -52,6 +53,11 @@ class MonitorData:
         return temperature_corr
 
     # use moving average to smooth readings
+
+    @staticmethod
+    def get_mel_time():
+        mel_zone = timezone('Australia/Melbourne')
+        return datetime.datetime.now(mel_zone)
 
 
 if __name__ == '__main__':
