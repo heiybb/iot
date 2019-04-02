@@ -42,7 +42,7 @@ def query_all_th_data():
     try:
         conn = sqlite3.connect(DB_FILE)
         exe = conn.cursor()
-        c = exe.execute('select * from TM_DATA')
+        c = exe.execute("""select * from TM_DATA""")
         for row in c:
             print('TimeSlot:' + row[0])
             print('Temperature:' + str(row[1]))
@@ -82,7 +82,9 @@ def get_analytics_data():
     try:
         conn = sqlite3.connect(DB_FILE)
         exe = conn.cursor()
-        c = exe.execute("""SELECT timestamp,temperature,humidity FROM TM_DATA""")
+        c = exe.execute("""SELECT datetime(timestamp,'localtime') AS MEL,temperature,humidity FROM TM_DATA
+                        WHERE MEL LIKE '%2019-03-30%' AND strftime('%M', MEL)% 30 =0
+                        ORDER BY MEL""")
         # c = exe.execute("""SELECT DISTINCT(strftime('%Y-%m-%d %H:%2',timestamp)),temperature,humidity
         #                     FROM TM_DATA
         #                     GROUP BY strftime('%Y-%m-%d %H',timestamp)""")
