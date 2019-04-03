@@ -39,11 +39,10 @@ class PushThreadWithCK(PushThread):
     This class extends Thread used for push notification asynchronously
     """
 
-    def __init__(self, utc_time, str_content):
+    def __init__(self, pb_title, pb_content, utc_time):
         threading.Thread.__init__(self)
+        PushThread.__init__(self, pb_title, pb_content)
         self.utc_time = utc_time
-        self.pb_title = 'Raspberry Notify'
-        self.pb_content = str_content
 
     def run(self):
         is_send_today = self.ck_is_sent(self.utc_time)

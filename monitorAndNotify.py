@@ -38,7 +38,7 @@ class MonitorData:
 
         if notify_msm is not '':
             today_utc = datetime.datetime.utcnow().strftime('%Y-%m-%d')
-            push = push_service.PushThreadWithCK(today_utc, notify_msm)
+            push = push_service.PushThreadWithCK("Monitor Notify", notify_msm, today_utc)
             push.start()
 
     @staticmethod
