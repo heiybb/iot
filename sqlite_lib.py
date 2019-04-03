@@ -83,7 +83,7 @@ def get_analytics_data():
         conn = sqlite3.connect(DB_FILE)
         exe = conn.cursor()
         c = exe.execute("""SELECT datetime(timestamp,'localtime') AS MEL,temperature,humidity FROM TM_DATA
-                        WHERE MEL LIKE '%2019-03-30%' AND strftime('%M', MEL)% 30 =0
+                        WHERE MEL LIKE '%2019-04-02%' AND strftime('%M', MEL)% 15 =0
                         ORDER BY MEL""")
         # c = exe.execute("""SELECT DISTINCT(strftime('%Y-%m-%d %H:%2',timestamp)),temperature,humidity
         #                     FROM TM_DATA
