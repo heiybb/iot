@@ -12,6 +12,13 @@ CSV_FILE = './report.csv'
 def main():
     """
     Mark different status according to the json file bound limit
+
+    row[0] represent the timestamp with format %Y-%m-%d
+    row[1] represent the MIN Temperature
+    row[2] represent the MAX Temperature
+    row[3] represent the MIN Humidity
+    row[4] represent the MAX Humidity
+
     :return: None
     """
     with open(CSV_FILE, 'w', newline='') as csv_file:

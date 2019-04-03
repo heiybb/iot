@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from decimal import Decimal
+from pytz import timezone
 
 from sense_hat import SenseHat
 
@@ -37,7 +38,7 @@ class MonitorData:
 
         if notify_msm is not '':
             today_utc = datetime.datetime.utcnow().strftime('%Y-%m-%d')
-            push = push_service.PushThreadWithCK(today_utc, notify_msm)
+            push = push_service.PushThreadWithCK("Monitor Notify", notify_msm, today_utc)
             push.start()
 
     @staticmethod
@@ -52,6 +53,11 @@ class MonitorData:
         return temperature_corr
 
     # use moving average to smooth readings
+
+    @staticmethod
+    def get_mel_time():
+        mel_zone = timezone('Australia/Melbourne')
+        return datetime.datetime.now(mel_zone)
 
 
 if __name__ == '__main__':
