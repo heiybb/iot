@@ -70,7 +70,7 @@ def get_report_msg(min_temp, max_temp, min_hum, max_hum):
     if max_temp > MAX_TEMP:
         msg += "{diff:0.2f}℃ above maximum temperature; ".format(diff=max_temp - MAX_TEMP)
     if min_hum < MIN_HUM:
-        msg += "{diff:0.2f}% below minimum temperature; ".format(diff=MIN_HUM - min_hum)
+        msg += "{diff:0.2f}% below minimum humidity; ".format(diff=MIN_HUM - min_hum)
     if max_hum > MAX_HUM:
-        msg += "{diff:0.2f}% above maximum temperature; ".format(diff=max_hum - MAX_HUM)
+        msg += "{diff:0.2f}% above maximum humidity; ".format(diff=max_hum - MAX_HUM)
     return msg
