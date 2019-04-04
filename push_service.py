@@ -18,6 +18,10 @@ if not os.path.isfile(PUSH_CHECK_FILE):
 
 
 class PushThread(threading.Thread):
+    """
+    This class extends Thread used for push notification asynchronously without time send check
+    """
+
     def __init__(self, pb_title, pb_content):
         threading.Thread.__init__(self)
         self.pb_title = pb_title
@@ -25,6 +29,10 @@ class PushThread(threading.Thread):
         self.service = Pushbullet(PUSHBULLET_API_KEY)
 
     def push(self):
+        """
+        Push via pushbullet service
+        :return: None
+        """
         try:
             self.service.push_note(self.pb_title, self.pb_content)
         except PushbulletError as push_error:
@@ -36,30 +44,39 @@ class PushThread(threading.Thread):
 
 class PushThreadWithCK(PushThread):
     """
-    This class extends Thread used for push notification asynchronously
+    This class extends Thread used for push notification asynchronously with the time send check
     """
 
-    def __init__(self, pb_title, pb_content, utc_time):
-        threading.Thread.__init__(self)
+    def __init__(self, pb_title, pb_content, pre_ck_time):
         PushThread.__init__(self, pb_title, pb_content)
-        self.utc_time = utc_time
+        self.pre_ck_time = pre_ck_time
 
     def run(self):
-        is_send_today = self.ck_is_sent(self.utc_time)
+        is_send_today = self.ck_is_sent(self.pre_ck_time)
 
         if not is_send_today:
             self.push()
-            self.mk_is_sent(self.utc_time)
+            self.mk_is_sent(self.pre_ck_time)
 
     @staticmethod
-    def ck_is_sent(date_time):
+    def ck_is_sent(pre_ck_time):
+        """
+        Check the time if was sent before or not
+        :param pre_ck_time: time that need to be checked if sent
+        :return: None
+        """
         with open(PUSH_CHECK_FILE, 'r', encoding='utf-8') as ck_file:
-            if date_time in ck_file.read():
+            if pre_ck_time in ck_file.read():
                 return True
         return False
 
     @staticmethod
     def mk_is_sent(date_time):
+        """
+        Write the data_time into the file and mark it was sent this day
+        :param date_time: time that need to marked as sent
+        :return:None
+        """
         try:
             with open(PUSH_CHECK_FILE, 'w', encoding='utf-8') as ck_file:
                 ck_file.write(date_time)
