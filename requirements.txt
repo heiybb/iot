@@ -1,3 +1,4 @@
+pyecharts
 pytz
 matplotlib
 pushbullet.py

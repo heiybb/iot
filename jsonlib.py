@@ -40,6 +40,7 @@ def get_max_humidity():
 
 
 def get_notify_msg(temperature, humidity):
+    """Return the appropriate notification message according to the bound of config """
     msg = ''
     if temperature < MIN_TEMP:
         msg += "Temperature: {temp:0.2f}℃\n {diff:0.2f}℃ below minimum {min_temp}℃\n" \
