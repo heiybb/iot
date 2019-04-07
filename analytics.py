@@ -15,7 +15,6 @@ class Analytics:
         data = sqlite_lib.get_analytics_data()
         timestamp, temp_set, hum_set = [], [], []
         x_ticks = []
-        # print(data)
         # Split the data and inert into appropriate set
         for row in data:
             timestamp.append(row[0].split(" ")[1][:5])

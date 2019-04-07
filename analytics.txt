@@ -1,0 +1,12 @@
+The strength of line graph can show the small changes in the data and compare changes over a period of time.
+Change of temperature and humidity are the two key elements in the data and they can change rapidly.
+As a result, line chart is the most suitable graph to use and also our choice for the analytical tasks (Task d).
+ 
+Graph1 (2019-04-02 Temperature Humidity Line Chart) is the changes of temperature and humidity on 2ndApril.
+The data is measured by every two hours. The library that we use for this graph is Matplotlib.
+Compare to other libraries, Matplotlib is relatively simple to generate a basic plot.
+
+Graph2 (Temperature Humidity Chart) is comparing the changes in temperature and humidity from 2ndApril to 3rdApril.
+In the graph, we show the maximum, minimum and the average temperature, humidity within two days.
+We use pyecharts library to generate Graph2. Compare to Matplotlib, pyecharts is more powerful.
+It can generate a detail and beautiful chart. 

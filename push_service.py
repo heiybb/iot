@@ -46,7 +46,6 @@ class PushThreadWithCK(PushThread):
     """
     This class extends Thread used for push notification asynchronously with the time send check
     """
-
     def __init__(self, pb_title, pb_content, pre_ck_time):
         PushThread.__init__(self, pb_title, pb_content)
         self.pre_ck_time = pre_ck_time

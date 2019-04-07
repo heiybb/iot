@@ -81,4 +81,3 @@ if __name__ == '__main__':
     sqlite_lib.initialize()
     MON = MonitorData()
     MON.try_push()
-    # sqlite_lib.query_all_th_data()
